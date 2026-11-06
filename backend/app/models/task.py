@@ -1,7 +1,18 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, String, Text, Uuid
+from sqlalchemy import (
+    JSON,
+    CheckConstraint,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    Uuid,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -24,6 +35,11 @@ class Task(TimestampMixin, Base):
         CheckConstraint(_in("recurrence", RECURRENCES), name="ck_tasks_recurrence"),
         CheckConstraint("importance BETWEEN 1 AND 5", name="ck_tasks_importance"),
         CheckConstraint("urgency BETWEEN 1 AND 5", name="ck_tasks_urgency"),
+        CheckConstraint("impact BETWEEN 1 AND 5", name="ck_tasks_impact"),
+        CheckConstraint(
+            "priority_override IS NULL OR priority_override BETWEEN 0 AND 100",
+            name="ck_tasks_priority_override",
+        ),
         CheckConstraint(
             "estimated_minutes IS NULL OR estimated_minutes > 0", name="ck_tasks_estimate"
         ),
@@ -39,6 +55,22 @@ class Task(TimestampMixin, Base):
     category_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("categories.id", ondelete="SET NULL"), index=True
     )
+
+    project_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("projects.id", ondelete="SET NULL"), index=True
+    )
+    phase_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("project_phases.id", ondelete="SET NULL"), index=True
+    )
+
+    # Priority: `priority_computed` is the engine's score; `priority_score` is what the user
+    # sees (the override when set). Factors are stored so the score can always be explained.
+    impact: Mapped[int] = mapped_column(Integer, nullable=False, default=3)
+    priority_score: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    priority_computed: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    priority_override: Mapped[int | None] = mapped_column(Integer)
+    priority_factors: Mapped[list | None] = mapped_column(JSON)
+    priority_computed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
