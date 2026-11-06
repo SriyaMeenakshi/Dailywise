@@ -92,6 +92,14 @@ def test_completion_sets_and_clears_completed_at(client, alice):
     assert reopened["completed_at"] is None
 
 
+def test_datetimes_are_returned_with_an_explicit_utc_offset(client, alice):
+    task = create(client, alice, deadline="2026-11-20T11:30:00Z")
+    fetched = client.get(f"{API}/{task['id']}", headers=alice).json()
+    for field in ("deadline", "created_at", "updated_at"):
+        assert fetched[field].endswith(("Z", "+00:00")), (field, fetched[field])
+    assert fetched["deadline"].startswith("2026-11-20T11:30")
+
+
 def test_delete(client, alice):
     task = create(client, alice)
     assert client.delete(f"{API}/{task['id']}", headers=alice).status_code == 204

@@ -19,8 +19,9 @@ def list_tasks(
     db: Annotated[Session, Depends(get_db)],
     status_: Annotated[list[TaskStatus] | None, Query(alias="status")] = None,
     category_id: uuid.UUID | None = None,
+    project_id: uuid.UUID | None = None,
     q: Annotated[str | None, Query(max_length=200)] = None,
-    sort: Literal["created_at", "updated_at", "deadline", "importance", "urgency", "title"] = "created_at",
+    sort: Literal["created_at", "updated_at", "deadline", "importance", "urgency", "priority", "title"] = "created_at",
     order: Literal["asc", "desc"] = "desc",
     limit: Annotated[int, Query(ge=1, le=200)] = 100,
     offset: Annotated[int, Query(ge=0)] = 0,
@@ -30,6 +31,7 @@ def list_tasks(
         user.id,
         statuses=status_,
         category_id=category_id,
+        project_id=project_id,
         q=q,
         sort=sort,
         descending=order == "desc",
@@ -53,7 +55,7 @@ def get_task(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)],
 ):
-    return service.get_task(db, user.id, task_id)
+    return service.get_task(db, user.id, task_id, refresh=True)
 
 
 @router.patch("/{task_id}", response_model=TaskRead)
