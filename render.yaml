@@ -1,0 +1,28 @@
+# Render blueprint for the API. Secrets are marked `sync: false`: enter them in the Render dashboard.
+services:
+  - type: web
+    name: daywise-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false # only for legacy HS256 projects; leave blank otherwise
+      - key: ALLOWED_ORIGINS
+        sync: false # your Vercel URL, e.g. https://daywise.vercel.app
+      - key: GEMINI_API_KEY
+        sync: false # optional
+      - key: AI_MODEL
+        value: gemini-2.5-flash
+      - key: AI_DAILY_REQUEST_LIMIT
+        value: "30"
+      - key: AI_DAILY_TOKEN_LIMIT
+        value: "200000"

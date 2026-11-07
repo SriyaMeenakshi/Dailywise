@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { CalendarDays, CheckSquare, FolderKanban, LayoutDashboard, ListOrdered, LogOut, Plus } from "lucide-react";
+import { BarChart3, CalendarDays, CheckSquare, FolderKanban, LayoutDashboard, ListOrdered, LogOut, Plus } from "lucide-react";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
@@ -17,6 +17,7 @@ const NAV = [
   { href: "/planner", label: "Plan", icon: CalendarDays },
   { href: "/priorities", label: "Priorities", icon: ListOrdered },
   { href: "/projects", label: "Projects", icon: FolderKanban },
+  { href: "/insights", label: "Insights", icon: BarChart3 },
 ] as const;
 
 function isTyping(el: EventTarget | null) {
@@ -68,6 +69,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-dvh">
+      <a
+        href="#main"
+        className="sr-only z-50 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      >
+        Skip to content
+      </a>
       <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r bg-sidebar px-3 py-5 md:flex">
         <Logo href="/dashboard" className="px-3" />
         <Button className="mt-6 h-9 justify-start gap-2 px-3" onClick={() => openEditor(null)}>
@@ -94,7 +101,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <LogOut />
           </Button>
         </header>
-        <main id="main" className="mx-auto w-full max-w-4xl flex-1 px-4 pt-6 pb-28 sm:px-8 md:pt-10 md:pb-16">
+        <main id="main" tabIndex={-1} className="mx-auto outline-none w-full max-w-4xl flex-1 px-4 pt-6 pb-28 sm:px-8 md:pt-10 md:pb-16">
           {children}
         </main>
         <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 flex items-center border-t bg-background/95 px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">

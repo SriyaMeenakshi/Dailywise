@@ -1,6 +1,9 @@
 import { getSupabase } from "@/lib/supabase/client";
 import type {
   AIStatus,
+  Analytics,
+  Review,
+  ReviewText,
   Block,
   Breakdown,
   BreakdownResponse,
@@ -168,6 +171,17 @@ export const api = {
     prefs: () => request<PlannerPrefs>("/preferences/planner"),
     setPrefs: (body: PlannerPrefs) =>
       request<PlannerPrefs>("/preferences/planner", { method: "PUT", body: JSON.stringify(body) }),
+  },
+  insights: {
+    analytics: (days: number, utcOffsetMinutes: number) =>
+      request<Analytics>(`/analytics?days=${days}&utc_offset_minutes=${utcOffsetMinutes}`),
+    review: (date: string, utcOffsetMinutes: number) =>
+      request<Review>(`/reviews/${date}?utc_offset_minutes=${utcOffsetMinutes}`),
+    saveReview: (date: string, utcOffsetMinutes: number, body: ReviewText) =>
+      request<Review>(`/reviews/${date}?utc_offset_minutes=${utcOffsetMinutes}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
   },
   priorities: {
     ranked: () => request<Task[]>("/priorities"),

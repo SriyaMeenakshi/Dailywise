@@ -202,6 +202,49 @@ export interface PlannerPrefs {
   break_minutes: number;
 }
 
+// ── Insights ──────────────────────────────────────────────────────────────────
+export interface TaskBrief {
+  id: string;
+  title: string;
+  deadline: string | null;
+  estimated_minutes: number | null;
+  actual_minutes: number | null;
+  priority_level: PriorityLevel | null;
+}
+
+export interface ReviewText {
+  accomplished: string;
+  remaining: string;
+  blockers: string;
+  tomorrow_focus: string;
+}
+
+export interface Review {
+  date: string;
+  saved: ReviewText | null;
+  facts: {
+    completed: TaskBrief[];
+    completed_minutes: number;
+    remaining: TaskBrief[];
+    blocked: TaskBrief[];
+    suggested_tomorrow: TaskBrief[];
+  };
+}
+
+export interface Analytics {
+  days: number;
+  completed: number;
+  pending: number;
+  overdue: number;
+  blocked: number;
+  completed_with_deadline: number;
+  completed_on_time: number;
+  daily: { date: string; completed: number; completed_minutes: number }[];
+  by_category: { name: string; color: string; completed: number; pending: number }[];
+  time_accuracy: { tasks: number; estimated_minutes: number; actual_minutes: number; biggest_misses: TaskBrief[] };
+  projects: { id: string; name: string; percent: number; remaining_minutes: number; deadline: string | null }[];
+}
+
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
   active: "Active",
   on_hold: "On hold",

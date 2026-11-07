@@ -94,6 +94,23 @@ are reported with a reason. Deadlines stay separate from time blocks: a late blo
 moved. Blocks are stored as minutes from local midnight, so no timezone maths is needed.
 Anything the user moves, completes or postpones is preserved when the day is recalculated.
 
+## Phase 4: insights, reflection and release
+
+* **Analytics (`services/insights.py`)** are computed on demand from the user's tasks; nothing is
+  stored or sampled, so an empty account shows empty charts. "Local day" is derived from the
+  client's UTC offset (`utc_offset_minutes`), so a late-night completion lands on the day the user
+  experienced. Time-accuracy only counts tasks that have both an estimate and an actual.
+* **Daily review** stores only the user's four written answers (`daily_reviews`). The facts beside
+  them (completed, still due, blocked, top priorities next) are recomputed from tasks each time.
+* **Production safety:** with `APP_ENV=production` the API refuses to start on SQLite, without
+  `SUPABASE_URL`, or with wildcard/localhost CORS origins, and it hides `/docs`. The Next.js app sets
+  `nosniff`, `X-Frame-Options: DENY`, a strict referrer policy and a locked-down permissions policy.
+* **Whole-API tests:** every OpenAPI operation is asserted to reject missing/invalid tokens, and the
+  migrations are applied up, down and up again and compared with the models.
+* **Accessibility:** skip link, labelled controls, `aria-pressed`/`aria-expanded` state, progress
+  bars with values, charts with an equivalent data table, visible focus rings, and animation that
+  turns off for `prefers-reduced-motion`.
+
 ## Decisions worth knowing
 
 * **Cache Components is off.** Every signed-in screen is per-user and time-dependent, so there is

@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import { PlanSnapshot, ProjectSnapshot } from "@/components/dashboard-extras";
 import { QuickAdd } from "@/components/quick-add";
 import { TaskRow } from "@/components/task-row";
 import { Button } from "@/components/ui/button";
@@ -65,7 +66,9 @@ export default function DashboardPage() {
 
       <nav aria-label="Shortcuts" className="-mt-4 flex flex-wrap gap-x-5 gap-y-1 text-sm">
         <Link href="/planner" className="font-medium underline underline-offset-4">Plan my day</Link>
-        <Link href="/priorities" className="text-muted-foreground hover:text-foreground">See all priorities</Link>
+        <Link href="/priorities" className="text-muted-foreground hover:text-foreground">Priorities</Link>
+        <Link href="/insights" className="text-muted-foreground hover:text-foreground">Insights</Link>
+        <Link href="/reflect" className="text-muted-foreground hover:text-foreground">End-of-day review</Link>
       </nav>
 
       {loadError ? (
@@ -74,6 +77,8 @@ export default function DashboardPage() {
         <ListSkeleton />
       ) : (
         <>
+          <PlanSnapshot />
+
           {view.plannedTotal > 0 && (
             <div className="rounded-2xl border bg-card p-4 shadow-card">
               <div className="flex items-baseline justify-between">
@@ -127,6 +132,7 @@ export default function DashboardPage() {
                   {view.upcoming.map((t) => <TaskRow key={t.id} task={t} />)}
                 </Section>
               )}
+              <ProjectSnapshot />
               {view.inbox.length > 0 && (
                 <div className="space-y-2.5">
                   <Section title="Inbox" count={view.inbox.length + view.inboxExtra}>
